@@ -16,6 +16,21 @@ class NeuralNetwork (nInput: Int, nHidden: Int, nOutput: Int,
         val finalOutputs = finalInputs.sigm()
 
         return finalOutputs
+    }
+
+    fun train(inputValues: DoubleArray, targetValues: DoubleArray) {
+        val input = createColumn(inputValues)
+        val target = createColumn(targetValues)
+
+        val hiddenInputs = weightInputHidden.multiply(input)
+        val hiddenOutputs = hiddenInputs.sigm()
+
+        val finalInputs = weightHiddenOutput.multiply(hiddenOutputs)
+        val finalOutputs = finalInputs.sigm()
+
+        val outputError = target.subtract(finalOutputs)
+        val hiddenError = weightHiddenOutput.transpose().multiply(outputError)
+
 
     }
 }
