@@ -25,3 +25,25 @@ fun createRandom(nRows: Int, nColumns: Int): RealMatrix {
 
 //fun createColumn(vararg column: Double) = MatrixUtils.createColumnRealMatrix(column)
 fun createColumn(column: DoubleArray) = MatrixUtils.createColumnRealMatrix(column)
+
+fun RealMatrix.scalarMultiple(other: RealMatrix): RealMatrix? {
+    if (columnDimension != other.columnDimension || rowDimension != other.rowDimension) {
+        throw IllegalArgumentException("Dimensions error")
+    } else {
+        val result = MatrixUtils.createRealMatrix(rowDimension, columnDimension)
+        for (row in 0 until rowDimension)
+            for (column in 0 until columnDimension)
+                result.setEntry(row, column,
+                        getEntry(row, column) * other.getEntry(row, column))
+        return result
+    }
+}
+
+fun RealMatrix.scalarSubtractionFrom(x: Double): RealMatrix {
+    val result = MatrixUtils.createRealMatrix(rowDimension, columnDimension)
+    for (row in 0 until rowDimension)
+        for (column in 0 until columnDimension)
+            result.setEntry(row, column,
+                    x - getEntry(row, column))
+    return result
+}
