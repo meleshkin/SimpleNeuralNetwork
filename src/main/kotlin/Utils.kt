@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Locale
 import javax.imageio.ImageIO
+import kotlin.collections.ArrayList
 import kotlin.math.exp
 import kotlin.random.Random
 
@@ -75,6 +77,41 @@ fun mnistCsvToJpg(inputFilePath: String, outputFilePath: String, index: Int) {
     ImageIO.write(image, "jpg", File(outputFilePath))
 }
 
+fun RealMatrix.store(outputFilePath: String) {
+    val fpFormat = "%.8f"
+    val separator = " "
+    val s = StringBuilder(rowDimension * columnDimension * 2)
+    for (row in 0 until rowDimension) {
+        for (column in 0 until columnDimension-1) {
+            val value= getEntry(row, column)
+            if (value >= 0) {
+                s.append(separator)
+            }
+            s.append(separator)
+            s.append(String.format(Locale.ROOT, fpFormat, value))
+        }
+        val value= getEntry(row, columnDimension-1)
+        if (value >= 0) {
+            s.append(separator)
+        }
+        s.append(separator)
+        s.appendln(String.format(Locale.ROOT, fpFormat, value))
+
+    }
+    File(outputFilePath).printWriter().use { it.println(s)}
+}
+
+fun RealMatrix.load(inputFilePath: String) {
+    val separator = " "
+    val lines = Files.readAllLines(Paths.get(inputFilePath))
+    lines.forEachIndexed { rowIndex, line ->
+        val row = line.split(separator)
+        row.filter{it.isNotEmpty()}.forEachIndexed {columnIndex, columnValue ->
+            setEntry(rowIndex, columnIndex, columnValue.replace(",", ".").toDouble())
+        }
+    }
+}
+
 
 fun scaledInputsFromCsvString(csvStr: String): ArrayList<Double> {
     val scaledList = ArrayList<Double>()
@@ -99,8 +136,18 @@ fun targetDigit(csvStr: String): String {
 }
 
 fun main() {
+    /*
     val inputFile = "resources/mnist_train_100.csv"
     val outputFile = "resources/mnist_train_100.jpg"
     val index = 1
     mnistCsvToJpg(inputFile, outputFile, index)
+    */
+
+
+    var matrix = createRandom(5, 5)
+    matrix.store("j:\\f.txt")
+
+
+    matrix = MatrixUtils.createRealMatrix(5, 5)
+    matrix.load("j:\\f.txt")
 }
